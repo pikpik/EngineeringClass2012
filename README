@@ -1,3 +1,15 @@
-This is for class projects.
+This is currently for my Engineering class projects during 2012.
 
-I hope to add more soon.
+I might reuse it for other things later.
+
+Projects
+
+  HelicopterProject   This stuff for my helipcopter project. We're currently working on a quadcopter.
+
+    arduino-code    Welcome to Arduino-land!
+
+      Spin_ESC    This is for Electronic Speed Control (ESC) motor programming.
+
+        Spin_ESC_CC_Thunderbird_9.ino   The unfinished program for the Castle Creations Thunderbird 9 ESC.
+
+        Spin_ESC_Simple.ino   The working program for the simpler ESC.
