@@ -1,4 +1,3 @@
-// By Stephen Hatton.
 // This is to control the Thunderbird 9 ESC controller.
 
 
