@@ -1,6 +1,6 @@
 #include <Servo.h>
 
-int servos [4] = { 0, 0, 0, 0 };
+int servos [ 4 ] = { 0, 0, 0, 0 };
 
 Servo s0;
 Servo s1;
@@ -13,18 +13,18 @@ Servo s1;
 int step = 0;
 int totalSteps = 7;
 
-// Each row is a step.
+// Each row is a synchronized step.
 // The first four columns are servo speeds.
 // The fifth column is the duration to hold that speed.
 
-int steps [7][5] = {
-  { 0, 0, 0, 0, 1000 },
-  { 70, 70, 0, 0, 500 },
-  { 100, 100, 0, 0, 600 },
-  { 120, 80, 0, 0, 600 },
-  { 70, 140, 0, 0, 600 },
-  { 150, 150, 0, 0, 600 },
-  { 0, 0, 0, 0, 4000 }
+int steps [ 7 ][ 5 ] = {
+  { 0,    0,   0, 0, 1000 },
+  { 70,   70,  0, 0, 500 },
+  { 100,  100, 0, 0, 600 },
+  { 120,  80,  0, 0, 600 },
+  { 70,   140, 0, 0, 600 },
+  { 150,  150, 0, 0, 600 },
+  { 0,    0,   0, 0, 4000 }
 };
 
 
@@ -88,8 +88,6 @@ void resetESC ( int servo ) {
 
 void setSpeed ( int servo, int speed ) {
   
-  //saySpeeds ();
-  
   servos [ servo ] = speed;
   
 }
@@ -142,7 +140,8 @@ void setup () {
 // This loops until the Arduino is turned off.
 
 void loop () {
-  
+
+  // This code is for more direct control.  
   /*for ( int s = 0; s <= 100; s++ ) {
     
     setSpeed ( 0, s );
@@ -156,6 +155,7 @@ void loop () {
     
   }*/
   
+  // This code allows for synchronized steps.
   doStep ();
   
 }
