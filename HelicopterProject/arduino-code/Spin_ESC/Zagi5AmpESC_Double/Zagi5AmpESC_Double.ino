@@ -1,8 +1,6 @@
 #include <Servo.h>
 
-//int servos [1] = { 0 };
-int servos [2] = { 0, 0 };
-//int servos [4] = { 0, 0, 0, 0 };
+int servos [4] = { 0, 0, 0, 0 };
 
 Servo s0;
 Servo s1;
@@ -11,6 +9,72 @@ Servo s1;
 
 #define ESCResetSpeed 60
 #define ESCEndSpeed 158
+
+int step = 0;
+int totalSteps = 7;
+
+// Each row is a step.
+// The first four columns are servo speeds.
+// The fifth column is the duration to hold that speed.
+
+int steps [7][5] = {
+  { 0, 0, 0, 0, 1000 },
+  { 70, 70, 0, 0, 500 },
+  { 100, 100, 0, 0, 600 },
+  { 120, 80, 0, 0, 600 },
+  { 70, 140, 0, 0, 600 },
+  { 150, 150, 0, 0, 600 },
+  { 0, 0, 0, 0, 4000 }
+};
+
+
+void doStep () {
+  
+  Serial.print ( "Step #" );
+  Serial.println ( step );
+  
+  if (
+  
+    servos [ 0 ] == steps [ step ] [ 0 ] &&
+    servos [ 1 ] == steps [ step ] [ 1 ] &&
+    servos [ 2 ] == steps [ step ] [ 2 ] &&
+    servos [ 3 ] == steps [ step ] [ 3 ]
+    
+  ) {
+    
+    delay ( steps [ step ] [ 4 ] );
+    
+    step++;
+    
+    if ( step >= totalSteps ) step = 0;
+    
+  } else {
+    
+    servos [ 0 ] += speedUpOrDown ( servos [ 0 ], steps [ step ] [ 0 ] );
+    servos [ 1 ] += speedUpOrDown ( servos [ 1 ], steps [ step ] [ 1 ] );
+    servos [ 2 ] += speedUpOrDown ( servos [ 2 ], steps [ step ] [ 2 ] );
+    servos [ 3 ] += speedUpOrDown ( servos [ 3 ], steps [ step ] [ 3 ] );
+    
+    //saySpeeds ();
+    useSpeeds ();
+    
+  }
+  
+}
+
+
+int speedUpOrDown ( int start, int finish ) {
+  
+  return (finish == start) ?
+    0
+  :
+    ( finish - start ) < 0 ?
+      -1
+    :
+      1
+  ;
+  
+}
 
 
 void resetESC ( int servo ) {
@@ -24,17 +88,29 @@ void resetESC ( int servo ) {
 
 void setSpeed ( int servo, int speed ) {
   
-  Serial.print ( "Servo, speed: " );
-  Serial.print ( servo );
-  Serial.print ( ", " );
-  Serial.println ( speed );
+  //saySpeeds ();
   
   servos [ servo ] = speed;
   
 }
 
+void saySpeeds () {
+  
+  Serial.print ( "Servo speeds: " );
+  Serial.print ( servos [ 0 ] );
+  Serial.print ( ", " );
+  Serial.print ( servos [ 1 ] );
+  Serial.print ( ", " );
+  Serial.print ( servos [ 2 ] );
+  Serial.print ( ", " );
+  Serial.println ( servos [ 3 ] );
+  
+}
+
 
 void useSpeeds () {
+  
+  saySpeeds ();
   
   s0.write ( servos [ 0 ] );
   s1.write ( servos [ 1 ] );
@@ -57,8 +133,8 @@ void setup () {
   
   resetESC ( 0 );
   resetESC ( 1 );
-  //resetESC ( 2 );
-  //resetESC ( 3 );
+  resetESC ( 2 );
+  resetESC ( 3 );
   
 }
 
@@ -67,15 +143,19 @@ void setup () {
 
 void loop () {
   
-  for ( int s = 0; s <= 100; s++ ) {
+  /*for ( int s = 0; s <= 100; s++ ) {
     
     setSpeed ( 0, s );
     setSpeed ( 1, s );
+    setSpeed ( 2, s );
+    setSpeed ( 3, s );
     
     useSpeeds ();
     
     delay ( 10 );
     
-  }
+  }*/
+  
+  doStep ();
   
 }
