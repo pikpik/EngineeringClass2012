@@ -4,10 +4,36 @@
 double SetpointA, InputA, OutputA;
 double SetpointB, InputB, OutputB;
 
+// Sampling every 15 ms
 //Originally: 2,5,1
 //Fast: 2,100,1
-PID myPIDA(&InputA, &OutputA, &SetpointA, 0.5,0.5,1, REVERSE);
-PID myPIDB(&InputB, &OutputB, &SetpointB, 0.5,0.5,1, DIRECT);
+// Almost balancing:
+// 4,2,1 good
+// 4,0.5,1 better
+// 4,0.5,0.5 better
+// 8,0.5,0.5 worse
+// 2,0.5,0.5 smoother, but not better
+// 3,0.5,0.5 great! But it's a little slow at times.
+// 3,0.1,0.1 worse!
+// 3,0.7,0.7 better
+// 3,0.6,0.6 better
+// 3,0.5,0.6 not really better
+// 3,0.6,0.5 better!
+// 3,0.7,0.4 not so good.
+// 3,0.4,0.4 it wobbles.
+// 3,0.5,0.5 it stabilizes sort of quickly, and then wobbles some.
+// 4,0.5,0.5
+
+// Sampling every 1 ms
+// 3,0.7,0.1 good, but wobbly
+// 4,1,0.1 good, but a little slow and wobbly
+// 5,2,0 slow, unable to stabilize
+// 5,0,0 slow, slow to stabilize, wobbly
+// 3,0,0 even slower
+// 3,1,0 slower to stabilize, wobbles less
+
+PID myPIDA(&InputA, &OutputA, &SetpointA, 3,1,0, REVERSE);
+PID myPIDB(&InputB, &OutputB, &SetpointB, 3,1,0, DIRECT);
 
 float gyroX = 0,
       gyroY = 0,
@@ -207,8 +233,14 @@ void setup() {
   myPIDA.SetMode(AUTOMATIC);
   myPIDB.SetMode(AUTOMATIC);
   
-  myPIDA.SetSampleTime(15);
-  myPIDB.SetSampleTime(15);
+  myPIDA.SetOutputLimits(0, 10);
+  myPIDB.SetOutputLimits(0, 10);
+  
+  myPIDA.SetSampleTime(1);
+  myPIDB.SetSampleTime(1);
+  
+  // Let's wait for the ESC's.
+  delay(1000);
   
 }
 
