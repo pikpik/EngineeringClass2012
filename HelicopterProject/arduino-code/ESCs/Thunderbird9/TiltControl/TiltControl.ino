@@ -6,8 +6,8 @@ double SetpointB, InputB, OutputB;
 
 //Originally: 2,5,1
 //Fast: 2,100,1
-PID myPIDA(&InputA, &OutputA, &SetpointA, 2,40,1, REVERSE);
-PID myPIDB(&InputB, &OutputB, &SetpointB, 2,40,1, DIRECT);
+PID myPIDA(&InputA, &OutputA, &SetpointA, 0.5,0.5,1, REVERSE);
+PID myPIDB(&InputB, &OutputB, &SetpointB, 0.5,0.5,1, DIRECT);
 
 float gyroX = 0,
       gyroY = 0,
