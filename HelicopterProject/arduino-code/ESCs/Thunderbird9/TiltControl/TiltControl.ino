@@ -1,12 +1,26 @@
 #include <Servo.h>
+#include <PID_v1.h>
+
+double SetpointA, InputA, OutputA;
+double SetpointB, InputB, OutputB;
+
+//Originally: 2,5,1
+//Fast: 2,100,1
+PID myPIDA(&InputA, &OutputA, &SetpointA, 2,40,1, REVERSE);
+PID myPIDB(&InputB, &OutputB, &SetpointB, 2,40,1, DIRECT);
 
 float gyroX = 0,
       gyroY = 0,
       gyroOffsetX = 0.31,
       gyroOffsetY = 0;
 
+int speedBase = 50;
+
+float goalAngleX = 0.18,
+      goalAngleY = 0.18;
+
+int speeds [ 4 ] = { 0, 0, 0, 0 };
 int servos [ 4 ] = { 0, 0, 0, 0 };
-int speeds [ 4 ] = { 70, 70, 0, 0 };
 
 Servo s0;
 Servo s1;
@@ -77,6 +91,14 @@ void useSpeeds () {
   s1.write ( servos [ 1 ] );
   
   delay ( 15 );
+  
+}
+
+
+void rampSpeeds () {
+  
+  speeds [ 0 ] += speedUpOrDown ( speeds [ 0 ], speedBase );
+  speeds [ 1 ] += speedUpOrDown ( speeds [ 1 ], speedBase );
   
 }
 
@@ -173,6 +195,21 @@ void setup() {
   
   firstSample = 1;
   
+  
+  // Set up the PID controllers.
+  
+  InputA = gyroX;
+  InputB = gyroX;
+  
+  SetpointA = goalAngleX;
+  SetpointB = goalAngleX;
+  
+  myPIDA.SetMode(AUTOMATIC);
+  myPIDB.SetMode(AUTOMATIC);
+  
+  myPIDA.SetSampleTime(15);
+  myPIDB.SetSampleTime(15);
+  
 }
 
 void loop() {
@@ -188,7 +225,33 @@ void loop() {
   
   gyroX = RwEst[0];
   
-  adjustOrientation ();
+  
+  // Gradually have all motors follow the base speed.
+  
+  rampSpeeds ();
+  
+  //adjustOrientation ();
+  
+  // Update the PID controllers.
+  
+  InputA = gyroX;
+  InputB = gyroX;
+  
+  myPIDA.Compute();
+  myPIDB.Compute();
+  
+  // Set the speeds.
+  // Keep the speeds within the safe ranges.
+  
+  //servos [ 0 ] = min ( 150, max ( 0, speeds [ 0 ] + OutputA ) );
+  //servos [ 1 ] = min ( 150, max ( 0, speeds [ 1 ] + OutputB ) );
+  
+  servos [ 0 ] = speeds [ 0 ] + OutputA;
+  servos [ 1 ] = speeds [ 1 ] + OutputB;
+  
+  // Update the motors (ESC's).
+  
+  useSpeeds ();
   
   
 }
